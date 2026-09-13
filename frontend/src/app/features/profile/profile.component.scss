@@ -1,0 +1,16 @@
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.full { grid-column: 1 / -1; }
+.skill-pill.skill-row {
+  justify-content: space-between;
+}
+.skill-pill.skill-row label {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}
+.skill-pill.skill-row select {
+  width: auto;
+  min-width: 8rem;
+  padding: .35rem .5rem;
+}
+@media (max-width: 650px) { .grid { grid-template-columns: 1fr; } .full { grid-column: auto; } }

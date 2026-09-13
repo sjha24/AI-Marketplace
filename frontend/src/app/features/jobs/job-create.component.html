@@ -1,0 +1,101 @@
+<section class="page">
+  <header>
+    <p class="eyebrow">Client workspace</p>
+    <h1>Post a job</h1>
+    <p>Describe the work and the skills you need.</p>
+  </header>
+
+  @if (loading) {
+    <p>Loading form…</p>
+  } @else {
+    <form class="job-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="field">
+        <label for="categoryId">Category</label>
+        <select id="categoryId" formControlName="categoryId"
+          [attr.aria-invalid]="form.controls.categoryId.invalid && form.controls.categoryId.touched">
+          <option value="" disabled>Select a category</option>
+          @for (category of categories; track category.id) {
+            <option [value]="category.id">{{ category.name }}</option>
+          }
+        </select>
+        @if (form.controls.categoryId.touched && form.controls.categoryId.errors) {
+          <p class="field-error">{{ form.controls.categoryId.getError('server') || 'Category is required.' }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="title">Title</label>
+        <input id="title" formControlName="title"
+          [attr.aria-invalid]="form.controls.title.invalid && form.controls.title.touched" />
+        @if (form.controls.title.touched && form.controls.title.errors) {
+          <p class="field-error">{{ form.controls.title.getError('server') || 'Title is required.' }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="description">Description</label>
+        <textarea id="description" rows="6" formControlName="description"
+          [attr.aria-invalid]="form.controls.description.invalid && form.controls.description.touched"></textarea>
+        @if (form.controls.description.touched && form.controls.description.errors) {
+          <p class="field-error">{{ form.controls.description.getError('server') || 'Description is required.' }}</p>
+        }
+      </div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label for="budgetMin">Minimum budget</label>
+          <input id="budgetMin" type="number" min="0" formControlName="budgetMin" />
+          @if (form.controls.budgetMin.touched && form.controls.budgetMin.errors) {
+            <p class="field-error">{{ form.controls.budgetMin.getError('server') || 'Enter a valid minimum budget.' }}</p>
+          }
+        </div>
+        <div class="field">
+          <label for="budgetMax">Maximum budget</label>
+          <input id="budgetMax" type="number" min="0" formControlName="budgetMax" />
+          @if (form.controls.budgetMax.touched && form.controls.budgetMax.errors) {
+            <p class="field-error">{{ form.controls.budgetMax.getError('server') || 'Enter a valid maximum budget.' }}</p>
+          }
+        </div>
+        <div class="field">
+          <label for="currency">Currency</label>
+          <input id="currency" maxlength="3" formControlName="currency" />
+        </div>
+        <div class="field">
+          <label for="experienceLevel">Experience level</label>
+          <select id="experienceLevel" formControlName="experienceLevel">
+            <option value="ENTRY">Entry</option>
+            <option value="INTERMEDIATE">Intermediate</option>
+            <option value="EXPERT">Expert</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="closesAt">Closes at (optional)</label>
+          <input id="closesAt" type="datetime-local" formControlName="closesAt" />
+        </div>
+      </div>
+
+      <fieldset class="skills">
+        <legend>Required skills</legend>
+        @if (skillError) { <p class="field-error" role="alert">{{ skillError }}</p> }
+        <div class="skills-grid">
+          @for (skill of skills; track skill.id) {
+            <label class="skill-pill">
+              <input type="checkbox" [checked]="isSelected(skill.id)"
+                (change)="toggleSkill(skill.id, $any($event.target).checked)" />
+              {{ skill.name }}
+            </label>
+          }
+        </div>
+      </fieldset>
+
+      @if (error) { <p class="banner error" role="alert">{{ error }}</p> }
+
+      <div class="actions">
+        <button class="btn primary" type="submit" [disabled]="saving">
+          {{ saving ? 'Posting…' : 'Post job' }}
+        </button>
+        <a class="btn" routerLink="/jobs/mine">Cancel</a>
+      </div>
+    </form>
+  }
+</section>

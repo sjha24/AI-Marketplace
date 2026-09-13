@@ -1,0 +1,56 @@
+<section class="chat-panel" aria-label="Order chat">
+  <header class="chat-header">
+    <div>
+      <h2>Order chat</h2>
+      <p class="meta">
+        <span class="presence" [class.online]="peerOnline" [class.offline]="!peerOnline"></span>
+        {{ peerName }} · {{ peerOnline ? 'Online' : 'Offline' }}
+        @if (unreadCount > 0) {
+          <span class="badge" aria-label="Unread messages">{{ unreadCount }}</span>
+        }
+      </p>
+    </div>
+  </header>
+
+  @if (error) {
+    <p class="banner error" role="alert">{{ error }}</p>
+  }
+
+  <div class="chat-log" role="log" aria-live="polite">
+    @if (loading) {
+      <p class="meta">Loading messages…</p>
+    } @else if (messages.length === 0) {
+      <p class="meta">No messages yet. Say hello to kick things off.</p>
+    } @else {
+      @for (message of messages; track message.id) {
+        <article
+          class="bubble"
+          [class.mine]="message.mine"
+          [class.system]="message.messageType === 'SYSTEM'"
+        >
+          @if (message.messageType !== 'SYSTEM') {
+            <p class="sender">{{ message.mine ? 'You' : message.senderDisplayName }}</p>
+          }
+          <p class="body">{{ message.body }}</p>
+          <time>{{ message.createdAt | date:'short' }}</time>
+        </article>
+      }
+    }
+  </div>
+
+  <form class="composer" (ngSubmit)="send()">
+    <label class="sr-only" for="chat-draft">Message</label>
+    <textarea
+      id="chat-draft"
+      rows="2"
+      [(ngModel)]="draft"
+      name="draft"
+      maxlength="4000"
+      placeholder="Write a message…"
+      [disabled]="sending || !!error"
+    ></textarea>
+    <button type="submit" class="btn primary" [disabled]="sending || !draft.trim() || !!error">
+      {{ sending ? 'Sending…' : 'Send' }}
+    </button>
+  </form>
+</section>

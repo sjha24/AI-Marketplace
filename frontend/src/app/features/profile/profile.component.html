@@ -1,0 +1,110 @@
+<section class="page">
+  <header><p class="eyebrow">Account</p><h1>Your profile</h1></header>
+  @if (loading) { <p>Loading profile…</p> }
+  @else {
+    <form class="profile-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="grid">
+        <div class="field">
+          <label for="displayName">Display name</label>
+          <input id="displayName" formControlName="displayName"
+            [attr.aria-invalid]="form.controls.displayName.invalid && form.controls.displayName.touched"
+            aria-describedby="displayName-error" />
+          @if (form.controls.displayName.touched && form.controls.displayName.errors) {
+            <p class="field-error" id="displayName-error">
+              @if (form.controls.displayName.hasError('required')) { Display name is required. }
+              @else if (form.controls.displayName.hasError('maxlength')) { Use 120 characters or fewer. }
+              @else { {{ form.controls.displayName.getError('server') }} }
+            </p>
+          }
+        </div>
+        <div class="field">
+          <label for="headline">Headline</label>
+          <input id="headline" formControlName="headline"
+            [attr.aria-invalid]="form.controls.headline.invalid && form.controls.headline.touched"
+            aria-describedby="headline-error" />
+          @if (form.controls.headline.touched && form.controls.headline.errors) {
+            <p class="field-error" id="headline-error">
+              {{ form.controls.headline.hasError('maxlength') ? 'Use 200 characters or fewer.' : form.controls.headline.getError('server') }}
+            </p>
+          }
+        </div>
+        <div class="field full">
+          <label for="bio">Bio</label>
+          <textarea id="bio" rows="5" formControlName="bio"></textarea>
+          @if (form.controls.bio.touched && form.controls.bio.hasError('server')) {
+            <p class="field-error">{{ form.controls.bio.getError('server') }}</p>
+          }
+        </div>
+        <div class="field">
+          <label for="hourlyRate">Hourly rate</label>
+          <input id="hourlyRate" type="number" min="0" formControlName="hourlyRate"
+            [attr.aria-invalid]="form.controls.hourlyRate.invalid && form.controls.hourlyRate.touched" />
+          @if (form.controls.hourlyRate.touched && form.controls.hourlyRate.errors) {
+            <p class="field-error">{{ form.controls.hourlyRate.hasError('min') ? 'Rate cannot be negative.' : form.controls.hourlyRate.getError('server') }}</p>
+          }
+        </div>
+        <div class="field">
+          <label for="currency">Currency</label>
+          <input id="currency" maxlength="3" formControlName="currency"
+            [attr.aria-invalid]="form.controls.currency.invalid && form.controls.currency.touched" />
+          @if (form.controls.currency.touched && form.controls.currency.errors) {
+            <p class="field-error">
+              @if (form.controls.currency.hasError('required')) { Currency is required. }
+              @else if (form.controls.currency.hasError('pattern')) { Use exactly three letters. }
+              @else { {{ form.controls.currency.getError('server') }} }
+            </p>
+          }
+        </div>
+        <div class="field">
+          <label for="location">Location</label>
+          <input id="location" formControlName="location" />
+          @if (form.controls.location.touched && form.controls.location.errors) {
+            <p class="field-error">{{ form.controls.location.hasError('maxlength') ? 'Use 120 characters or fewer.' : form.controls.location.getError('server') }}</p>
+          }
+        </div>
+        <div class="field">
+          <label for="yearsExperience">Years of experience</label>
+          <input id="yearsExperience" type="number" min="0" formControlName="yearsExperience" />
+          @if (form.controls.yearsExperience.touched && form.controls.yearsExperience.errors) {
+            <p class="field-error">{{ form.controls.yearsExperience.hasError('min') ? 'Experience cannot be negative.' : form.controls.yearsExperience.getError('server') }}</p>
+          }
+        </div>
+        <div class="field full">
+          <label for="avatarUrl">Avatar URL</label>
+          <input id="avatarUrl" type="url" formControlName="avatarUrl" />
+          @if (form.controls.avatarUrl.touched && form.controls.avatarUrl.errors) {
+            <p class="field-error">{{ form.controls.avatarUrl.hasError('maxlength') ? 'Use 500 characters or fewer.' : form.controls.avatarUrl.getError('server') }}</p>
+          }
+        </div>
+      </div>
+      <fieldset class="skills">
+        <legend>Skills</legend>
+        @if (skillError) { <p class="banner error" role="alert">{{ skillError }}</p> }
+        <div class="skills-grid">
+          @for (skill of skills; track skill.id) {
+            <div class="skill-pill skill-row">
+              <label>
+                <input type="checkbox" [checked]="isSelected(skill.id)"
+                  (change)="toggleSkill(skill, $any($event.target).checked)" />
+                {{ skill.name }}
+              </label>
+              @if (isSelected(skill.id)) {
+                <select [value]="selected.get(skill.id)" (change)="setLevel(skill.id, $any($event.target).value)"
+                  [attr.aria-label]="'Level for ' + skill.name">
+                  <option value="BEGINNER">Beginner</option>
+                  <option value="INTERMEDIATE">Intermediate</option>
+                  <option value="EXPERT">Expert</option>
+                </select>
+              }
+            </div>
+          }
+        </div>
+      </fieldset>
+      @if (error) { <p class="banner error" role="alert">{{ error }}</p> }
+      @if (success) { <p class="banner success" role="status">{{ success }}</p> }
+      <button class="btn primary" type="submit" [disabled]="saving">
+        {{ saving ? 'Saving…' : 'Save profile' }}
+      </button>
+    </form>
+  }
+</section>

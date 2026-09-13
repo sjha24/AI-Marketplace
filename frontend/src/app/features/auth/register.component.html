@@ -1,0 +1,82 @@
+<section class="auth-panel">
+  <div class="auth-copy">
+    <p class="eyebrow">AI Marketplace</p>
+    <h1>Create your account</h1>
+    <p class="lede">Join as a client posting work or a freelancer bidding on jobs.</p>
+  </div>
+
+  <form class="card-form" [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <h2>Register</h2>
+
+    <div class="field">
+      <label for="register-name">Display name</label>
+      <input id="register-name" type="text" formControlName="displayName" autocomplete="name"
+        [attr.aria-invalid]="form.controls.displayName.invalid && form.controls.displayName.touched"
+        aria-describedby="register-name-error" />
+      @if (form.controls.displayName.touched && form.controls.displayName.errors) {
+        <p class="field-error" id="register-name-error">
+          @if (form.controls.displayName.hasError('required')) { Display name is required. }
+          @else if (form.controls.displayName.hasError('maxlength')) { Use 120 characters or fewer. }
+          @else { {{ form.controls.displayName.getError('server') }} }
+        </p>
+      }
+    </div>
+    <div class="field">
+      <label for="register-email">Email</label>
+      <input id="register-email" type="email" formControlName="email" autocomplete="email"
+        [attr.aria-invalid]="form.controls.email.invalid && form.controls.email.touched"
+        aria-describedby="register-email-error" />
+      @if (form.controls.email.touched && form.controls.email.errors) {
+        <p class="field-error" id="register-email-error">
+          @if (form.controls.email.hasError('required')) { Email is required. }
+          @else if (form.controls.email.hasError('email')) { Enter a valid email address. }
+          @else { {{ form.controls.email.getError('server') }} }
+        </p>
+      }
+    </div>
+    <div class="field">
+      <label for="register-password">Password</label>
+      <input id="register-password" type="password" formControlName="password" autocomplete="new-password"
+        [attr.aria-invalid]="form.controls.password.invalid && form.controls.password.touched"
+        aria-describedby="register-password-error" />
+      @if (form.controls.password.touched && form.controls.password.errors) {
+        <p class="field-error" id="register-password-error">
+          @if (form.controls.password.hasError('required')) { Password is required. }
+          @else if (form.controls.password.hasError('minlength')) { Password must be at least 8 characters. }
+          @else if (form.controls.password.hasError('maxlength')) { Password must be at most 72 characters. }
+          @else { {{ form.controls.password.getError('server') }} }
+        </p>
+      }
+    </div>
+    <fieldset [attr.aria-invalid]="form.controls.role.invalid && form.controls.role.touched"
+      aria-describedby="register-role-error">
+      <legend>I am a</legend>
+      <label class="radio">
+        <input type="radio" formControlName="role" value="CLIENT" />
+        Client
+      </label>
+      <label class="radio">
+        <input type="radio" formControlName="role" value="FREELANCER" />
+        Freelancer
+      </label>
+    </fieldset>
+    @if (form.controls.role.touched && form.controls.role.errors) {
+      <p class="field-error" id="register-role-error">
+        {{ form.controls.role.hasError('required') ? 'Choose a role.' : form.controls.role.getError('server') }}
+      </p>
+    }
+
+    @if (error) {
+      <p class="banner error" role="alert">{{ error }}</p>
+    }
+
+    <button class="btn primary" type="submit" [disabled]="loading">
+      {{ loading ? 'Creating…' : 'Create account' }}
+    </button>
+
+    <p class="switch">
+      Already registered?
+      <a routerLink="/login">Sign in</a>
+    </p>
+  </form>
+</section>

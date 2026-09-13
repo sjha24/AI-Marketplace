@@ -1,0 +1,125 @@
+.chat-panel {
+  display: grid;
+  gap: 1rem;
+  background: #fff;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  box-shadow: 0 12px 40px #263b6a1a;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.chat-header h2 {
+  margin: 0 0 .35rem;
+  font-size: 1.15rem;
+}
+
+.meta {
+  margin: 0;
+  color: #5b667a;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.presence {
+  width: .65rem;
+  height: .65rem;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.presence.online { background: #1f9d55; }
+.presence.offline { background: #a0a8b8; }
+
+.badge {
+  display: inline-flex;
+  min-width: 1.25rem;
+  justify-content: center;
+  padding: .1rem .4rem;
+  border-radius: .75rem;
+  background: #335cff;
+  color: #fff;
+  font-size: .75rem;
+  font-weight: 700;
+}
+
+.chat-log {
+  display: grid;
+  gap: .75rem;
+  max-height: 360px;
+  overflow: auto;
+  padding: .5rem;
+  background: linear-gradient(180deg, #f7f9fc, #eef2f8);
+  border-radius: .75rem;
+}
+
+.bubble {
+  max-width: min(85%, 420px);
+  padding: .7rem .9rem;
+  border-radius: .85rem;
+  background: #fff;
+  border: 1px solid #d7deea;
+  justify-self: start;
+}
+
+.bubble.mine {
+  justify-self: end;
+  background: #e8eeff;
+  border-color: #c5d0f5;
+}
+
+.bubble.system {
+  justify-self: center;
+  background: transparent;
+  border-style: dashed;
+  color: #5b667a;
+  text-align: center;
+}
+
+.sender {
+  margin: 0 0 .25rem;
+  font-size: .8rem;
+  font-weight: 650;
+  color: #335cff;
+}
+
+.body {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+time {
+  display: block;
+  margin-top: .35rem;
+  font-size: .75rem;
+  color: #7a8496;
+}
+
+.composer {
+  display: grid;
+  gap: .75rem;
+}
+
+.composer textarea {
+  resize: vertical;
+  min-height: 4rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}

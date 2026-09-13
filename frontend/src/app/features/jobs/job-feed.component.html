@@ -1,0 +1,78 @@
+<section class="page">
+  <header>
+    <p class="eyebrow">Marketplace</p>
+    <h1>Browse jobs</h1>
+    <p>Find open projects that match your skills.</p>
+  </header>
+
+  @if (loading) {
+    <p>Loading jobs…</p>
+  } @else {
+    <form class="filters" [formGroup]="filters" (ngSubmit)="search()">
+      <div class="field">
+        <label for="q">Search</label>
+        <input id="q" formControlName="q" placeholder="Title or description" />
+      </div>
+      <div class="field">
+        <label for="categoryId">Category</label>
+        <select id="categoryId" formControlName="categoryId">
+          <option value="">All categories</option>
+          @for (category of categories; track category.id) {
+            <option [value]="category.id">{{ category.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <label for="skillId">Skill</label>
+        <select id="skillId" formControlName="skillId">
+          <option value="">All skills</option>
+          @for (skill of skills; track skill.id) {
+            <option [value]="skill.id">{{ skill.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <label for="status">Status</label>
+        <select id="status" formControlName="status">
+          <option value="OPEN">Open</option>
+          <option value="IN_PROGRESS">In progress</option>
+          <option value="CLOSED">Closed</option>
+          <option value="CANCELLED">Cancelled</option>
+        </select>
+      </div>
+      <button class="btn primary" type="submit" [disabled]="searching">
+        {{ searching ? 'Searching…' : 'Apply filters' }}
+      </button>
+    </form>
+
+    @if (error) { <p class="banner error" role="alert">{{ error }}</p> }
+
+    @if (!results.length) {
+      <p>No jobs match your filters.</p>
+    } @else {
+      <ul class="job-list">
+        @for (job of results; track job.id) {
+          <li>
+            <a [routerLink]="['/jobs', job.id]" class="job-card">
+              <div>
+                <h2>{{ job.title }}</h2>
+                <p class="meta">{{ job.categoryName }} · {{ job.experienceLevel }} · {{ job.status }}</p>
+                <p class="budget">{{ formatBudget(job) }}</p>
+                @if (job.skillNames.length) {
+                  <p class="skills">{{ job.skillNames.join(', ') }}</p>
+                }
+              </div>
+            </a>
+          </li>
+        }
+      </ul>
+      @if (totalPages > 1) {
+        <div class="pager">
+          <button type="button" class="btn" (click)="changePage(page - 1)" [disabled]="page === 0">Previous</button>
+          <span>Page {{ page + 1 }} of {{ totalPages }}</span>
+          <button type="button" class="btn" (click)="changePage(page + 1)" [disabled]="page + 1 >= totalPages">Next</button>
+        </div>
+      }
+    }
+  }
+</section>

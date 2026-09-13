@@ -1,0 +1,81 @@
+<section class="page">
+  @if (loading) {
+    <p>Loading order…</p>
+  } @else if (!order) {
+    <p class="banner error" role="alert">{{ error || 'Order not found.' }}</p>
+  } @else {
+    <header>
+      <p class="eyebrow">Order</p>
+      <h1>{{ order.orderNumber }}</h1>
+      <p class="meta">{{ order.status }} · Created {{ order.createdAt | date:'medium' }}</p>
+    </header>
+
+    <ol class="timeline">
+      @for (step of timelineSteps(); track step.status) {
+        <li [class.done]="step.done" [class.current]="step.current">{{ step.status }}</li>
+      }
+    </ol>
+
+    <article class="panel">
+      <p><strong>Job:</strong> <a [routerLink]="['/jobs', order.jobId]">{{ order.jobTitle }}</a></p>
+      <p><strong>Client:</strong> {{ order.clientDisplayName }}</p>
+      <p><strong>Freelancer:</strong> {{ order.freelancerDisplayName }}</p>
+      <p><strong>Amount:</strong> {{ order.currency }} {{ order.amount }}</p>
+      <p><strong>Platform fee:</strong> {{ order.currency }} {{ order.platformFee }}</p>
+      <p><strong>Freelancer payout:</strong> {{ order.currency }} {{ order.freelancerPayout }}</p>
+    </article>
+
+    @if (success) { <p class="banner success" role="status">{{ success }}</p> }
+    @if (error) { <p class="banner error" role="alert">{{ error }}</p> }
+
+    @if (canPay) {
+      <section class="panel pay-panel">
+        <h2>Pay & hold in escrow</h2>
+        <p class="meta">
+          Razorpay covers UPI wallets (GPay, PhonePe, Paytm). Stripe covers cards, Apple Pay, and Google Pay.
+          Use SIMULATED for local demos without API keys.
+        </p>
+
+        <div class="grid-2">
+          <div class="field">
+            <label for="provider">Payment provider</label>
+            <select id="provider" [(ngModel)]="selectedProvider" (ngModelChange)="onProviderChange()">
+              @for (provider of enabledProviders; track provider.provider) {
+                <option [value]="provider.provider">{{ provider.provider }}</option>
+              }
+            </select>
+          </div>
+          <div class="field">
+            <label for="method">Preferred method</label>
+            <select id="method" [(ngModel)]="selectedMethod">
+              @for (method of methodsForProvider; track method) {
+                <option [value]="method">{{ method }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        @for (provider of enabledProviders; track provider.provider) {
+          @if (provider.provider === selectedProvider) {
+            <p class="meta">{{ provider.notes }}</p>
+          }
+        }
+
+        <div class="actions">
+          <button type="button" class="btn primary" [disabled]="paying" (click)="startPay()">
+            {{ paying ? 'Starting checkout…' : 'Pay now' }}
+          </button>
+        </div>
+      </section>
+    }
+
+    @if (canChat && order) {
+      <app-order-chat [orderId]="order.id" [peerLabel]="chatPeerLabel" />
+    }
+
+    <div class="actions">
+      <a class="btn" routerLink="/orders">Back to orders</a>
+      <a class="btn" [routerLink]="['/jobs', order.jobId]">View job</a>
+    </div>
+  }
+</section>

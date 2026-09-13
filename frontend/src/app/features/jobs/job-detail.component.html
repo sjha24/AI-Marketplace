@@ -1,0 +1,166 @@
+<section class="page">
+  @if (loading) {
+    <p>Loading job…</p>
+  } @else if (!job) {
+    <p class="banner error" role="alert">{{ error || 'Job not found.' }}</p>
+  } @else if (!editing) {
+    <header>
+      <p class="eyebrow">{{ job.categoryName }}</p>
+      <h1>{{ job.title }}</h1>
+      <p class="meta">{{ job.experienceLevel }} · {{ job.status }} · {{ formatBudget(job) }}</p>
+    </header>
+
+    <article class="job-view">
+      <p>{{ job.description }}</p>
+      @if (job.skills.length) {
+        <p><strong>Skills:</strong> {{ skillNames(job) }}</p>
+      }
+      <p class="meta">Posted {{ job.createdAt | date:'medium' }}</p>
+    </article>
+
+    @if (success) { <p class="banner success" role="status">{{ success }}</p> }
+    @if (error) { <p class="banner error" role="alert">{{ error }}</p> }
+
+    <div class="actions">
+      <a class="btn" routerLink="/jobs">Back to jobs</a>
+      @if (canEdit) {
+        <button type="button" class="btn primary" (click)="startEdit()">Edit job</button>
+        <button type="button" class="btn" (click)="cancelJob()" [disabled]="cancelling">
+          {{ cancelling ? 'Cancelling…' : 'Cancel job' }}
+        </button>
+      }
+    </div>
+
+    @if (isOwner) {
+      <section class="panel">
+        <h2>Proposals</h2>
+        @if (!proposals.length) {
+          <p class="meta">No proposals yet.</p>
+        } @else {
+          <ul class="job-list">
+            @for (proposal of proposals; track proposal.id) {
+              <li class="job-card">
+                <h3>{{ proposal.freelancerDisplayName }}</h3>
+                <p class="meta">{{ proposal.currency }} {{ proposal.bidAmount }} · {{ proposal.deliveryDays }} days · {{ proposal.status }}</p>
+                <p>{{ proposal.coverLetter }}</p>
+                @if (proposal.status === 'SUBMITTED' || proposal.status === 'SHORTLISTED') {
+                  <div class="actions">
+                    <button type="button" class="btn primary"
+                      [disabled]="acceptingId === proposal.id || job.status !== 'OPEN'"
+                      (click)="acceptProposal(proposal)">
+                      {{ acceptingId === proposal.id ? 'Accepting…' : 'Accept proposal' }}
+                    </button>
+                  </div>
+                }
+              </li>
+            }
+          </ul>
+        }
+      </section>
+    }
+
+    @if (canPropose) {
+      <section class="panel">
+        <h2>Submit a proposal</h2>
+        @if (proposalSuccess) { <p class="banner success" role="status">{{ proposalSuccess }}</p> }
+        @if (proposalError) { <p class="banner error" role="alert">{{ proposalError }}</p> }
+        <form class="job-form" [formGroup]="proposalForm" (ngSubmit)="submitProposal()" novalidate>
+          <div class="field">
+            <label for="coverLetter">Cover letter</label>
+            <textarea id="coverLetter" rows="5" formControlName="coverLetter"></textarea>
+          </div>
+          <div class="grid-2">
+            <div class="field">
+              <label for="bidAmount">Bid amount</label>
+              <input id="bidAmount" type="number" min="0.01" step="0.01" formControlName="bidAmount" />
+            </div>
+            <div class="field">
+              <label for="proposalCurrency">Currency</label>
+              <input id="proposalCurrency" maxlength="3" formControlName="currency" />
+            </div>
+            <div class="field">
+              <label for="deliveryDays">Delivery days</label>
+              <input id="deliveryDays" type="number" min="1" max="365" formControlName="deliveryDays" />
+            </div>
+          </div>
+          <button class="btn primary" type="submit" [disabled]="submittingProposal">
+            {{ submittingProposal ? 'Submitting…' : 'Submit proposal' }}
+          </button>
+        </form>
+      </section>
+    } @else if (myProposal) {
+      <section class="panel">
+        <h2>Your proposal</h2>
+        <p class="meta">{{ myProposal.status }} · {{ myProposal.currency }} {{ myProposal.bidAmount }} · {{ myProposal.deliveryDays }} days</p>
+        <p>{{ myProposal.coverLetter }}</p>
+        <a class="btn" routerLink="/proposals/mine">View all proposals</a>
+      </section>
+    }
+  } @else {
+    <header>
+      <p class="eyebrow">Edit job</p>
+      <h1>{{ job.title }}</h1>
+    </header>
+
+    <form class="job-form" [formGroup]="form" (ngSubmit)="save()" novalidate>
+      <div class="field">
+        <label for="categoryId">Category</label>
+        <select id="categoryId" formControlName="categoryId">
+          @for (category of categories; track category.id) {
+            <option [value]="category.id">{{ category.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <label for="title">Title</label>
+        <input id="title" formControlName="title" />
+      </div>
+      <div class="field">
+        <label for="description">Description</label>
+        <textarea id="description" rows="6" formControlName="description"></textarea>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label for="budgetMin">Minimum budget</label>
+          <input id="budgetMin" type="number" min="0" formControlName="budgetMin" />
+        </div>
+        <div class="field">
+          <label for="budgetMax">Maximum budget</label>
+          <input id="budgetMax" type="number" min="0" formControlName="budgetMax" />
+        </div>
+        <div class="field">
+          <label for="currency">Currency</label>
+          <input id="currency" maxlength="3" formControlName="currency" />
+        </div>
+        <div class="field">
+          <label for="experienceLevel">Experience level</label>
+          <select id="experienceLevel" formControlName="experienceLevel">
+            <option value="ENTRY">Entry</option>
+            <option value="INTERMEDIATE">Intermediate</option>
+            <option value="EXPERT">Expert</option>
+          </select>
+        </div>
+      </div>
+      <fieldset class="skills">
+        <legend>Required skills</legend>
+        @if (skillError) { <p class="field-error" role="alert">{{ skillError }}</p> }
+        <div class="skills-grid">
+          @for (skill of skills; track skill.id) {
+            <label class="skill-pill">
+              <input type="checkbox" [checked]="isSelected(skill.id)"
+                (change)="toggleSkill(skill.id, $any($event.target).checked)" />
+              {{ skill.name }}
+            </label>
+          }
+        </div>
+      </fieldset>
+      @if (error) { <p class="banner error" role="alert">{{ error }}</p> }
+      <div class="actions">
+        <button class="btn primary" type="submit" [disabled]="saving">
+          {{ saving ? 'Saving…' : 'Save changes' }}
+        </button>
+        <button type="button" class="btn" (click)="cancelEdit()">Discard</button>
+      </div>
+    </form>
+  }
+</section>

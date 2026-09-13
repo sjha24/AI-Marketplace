@@ -1,0 +1,35 @@
+### Java / Maven ###
+target/
+**/target/
+*.class
+*.jar
+*.war
+
+### Node / Angular ###
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+.angular/
+coverage/
+
+### IDEs ###
+.idea/
+**/.idea/
+.vscode/
+*.iml
+.project
+.classpath
+.settings/
+
+### OS ###
+.DS_Store
+Thumbs.db
+
+### Logs and local secrets ###
+*.log
+.env
+.env.*
+!.env.example
+application-local.yml
+application-local.yaml

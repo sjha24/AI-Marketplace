@@ -1,0 +1,14 @@
+<header class="topbar">
+  <a class="brand" routerLink="/">AI Marketplace</a>
+  <nav aria-label="Main navigation">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+    <a routerLink="/jobs" routerLinkActive="active">Jobs</a>
+    @if (auth.currentUser()?.role === 'FREELANCER') {
+      <a routerLink="/proposals/mine" routerLinkActive="active">Proposals</a>
+    }
+    <a routerLink="/orders" routerLinkActive="active">Orders</a>
+    <a routerLink="/profile" routerLinkActive="active">Profile</a>
+    <button type="button" class="link-button" (click)="logout()">Sign out</button>
+  </nav>
+</header>
+<main><router-outlet /></main>

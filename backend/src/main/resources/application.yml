@@ -1,0 +1,49 @@
+server:
+  port: ${SERVER_PORT:8082}
+
+spring:
+  application:
+    name: ai-marketplace-backend
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/ai_marketplace?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: sauravS
+    password: saurav@jha24
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:local-development-secret-change-me-32-bytes}
+    expiration-minutes: ${JWT_EXPIRATION_MINUTES:60}
+  marketplace:
+    platform-fee-percent: ${PLATFORM_FEE_PERCENT:10}
+  chat:
+    redis-enabled: ${CHAT_REDIS_ENABLED:false}
+  payments:
+    allow-simulate: ${PAYMENTS_ALLOW_SIMULATE:true}
+    success-url: ${PAYMENT_SUCCESS_URL:http://localhost:4200/payments/success}
+    cancel-url: ${PAYMENT_CANCEL_URL:http://localhost:4200/payments/failed}
+    razorpay:
+      key-id: ${RAZORPAY_KEY_ID:}
+      key-secret: ${RAZORPAY_KEY_SECRET:}
+      webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:}
+    stripe:
+      secret-key: ${STRIPE_SECRET_KEY:}
+      publishable-key: ${STRIPE_PUBLISHABLE_KEY:}
+      webhook-secret: ${STRIPE_WEBHOOK_SECRET:}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
